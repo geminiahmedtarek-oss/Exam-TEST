@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Context } from "https://edge.netlify.com";
 
 export default async (request: Request, context: Context) => {
@@ -21,7 +22,7 @@ export default async (request: Request, context: Context) => {
     }
     
     // Using v1beta
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
     
     const response = await fetch(apiUrl, {
       method: 'POST',
