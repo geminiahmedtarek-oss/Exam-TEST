@@ -123,12 +123,16 @@ async function startServer() {
       const { base64Data, promptText } = req.body;
       const { GoogleGenAI } = await import("@google/genai");
       
-      const apiKey = process.env.GEMINI_API_KEY?.trim() === "MY_GEMINI_API_KEY" ? undefined : process.env.GEMINI_API_KEY?.trim();
+      const apiKey = process.env.GEMINI_API_KEY?.trim();
       
-      const ai = new GoogleGenAI(apiKey ? { apiKey } : {});
-      console.log(`Using apiKey of length: ${apiKey?.length}, starts with: ${apiKey?.substring(0, 4)}`);
-      import("fs").then(fs => fs.writeFileSync("apikey-debug.txt", `length: ${apiKey?.length}, starts with: ${apiKey?.substring(0, 4)}`));
+      if (!apiKey || apiKey === 'MY_GEMINI_API_KEY') {
+        return res.status(500).json({ 
+          error: "GEMINI_API_KEY_MISSING", 
+          message: "Please configure a valid GEMINI_API_KEY in the Environment Variables." 
+        });
+      }
 
+      const ai = new GoogleGenAI({ apiKey });
       
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
