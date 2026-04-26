@@ -250,28 +250,19 @@ Do NOT include markdown formatting like \`\`\`json - output pure JSON only.`;
 
       let jsonText = '';
       
-      // Call server proxy for secure AI generation
-      const response = await fetch('/api/ai/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ base64Data, promptText }),
-      });
-
-      if (!response.ok) {
-        let errorMsg = 'AI generation failed';
-        try {
-          const errorData = await response.json();
-          errorMsg = errorData.message || errorData.error || errorMsg;
-        } catch(e) {
-          errorMsg = await response.text();
+      const { GoogleGenAI } = await import("@google/genai");
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const apiResponse = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: {
+          parts: [
+            { inlineData: { mimeType: "application/pdf", data: base64Data } },
+            { text: promptText }
+          ]
         }
-        throw new Error(errorMsg);
-      }
-
-      const data = await response.json();
-      jsonText = data.text?.trim() || "";
+      });
+      
+      jsonText = apiResponse.text || "";
 
       if (jsonText.startsWith('\`\`\`')) {
          jsonText = jsonText.replace(/^\`\`\`(json)?/, '').replace(/\`\`\`$/, '').trim();
@@ -449,7 +440,7 @@ Do NOT include markdown formatting like \`\`\`json - output pure JSON only.`;
           ))}
         </ul>
         <div className="text-center text-xs text-gray-500 mt-6 pb-2 border-t pt-4">
-          <p>Version 4.5.6 | 2026-04-26</p>
+          <p>Version 4.5.7 | 2026-04-26</p>
           <a href="https://www.linkedin.com/in/ahmedtarekhasan/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline mt-1 block font-semibold">
             🔗 {isArabic ? "تواصل مع المطور" : "Connect with Developer"}
           </a>
@@ -691,7 +682,7 @@ Your whole response must be valid JSON and nothing else.
                   <h2 className="text-white text-2xl font-bold tracking-tight mb-1">
                     {isArabic ? "محاكي الامتحانات" : "Exam Simulator"}
                   </h2>
-                  <p className="text-slate-400 text-[11px] font-mono uppercase tracking-[0.3em]">VERSION 4.5.6</p>
+                  <p className="text-slate-400 text-[11px] font-mono uppercase tracking-[0.3em]">VERSION 4.5.7</p>
                 </div>
               </motion.div>
             </div>
@@ -865,7 +856,7 @@ Your whole response must be valid JSON and nothing else.
                 </div>
               )}
               
-              <div className="text-xs text-gray-400 text-center mt-6">Version 4.5.6 | 2026-04-26</div>
+              <div className="text-xs text-gray-400 text-center mt-6">Version 4.5.7 | 2026-04-26</div>
             </div>
           </motion.div>
         )}

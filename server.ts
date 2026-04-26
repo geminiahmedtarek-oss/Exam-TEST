@@ -10,6 +10,8 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  app.get("/api/health", (req, res) => res.json({ key: process.env.GEMINI_API_KEY }));
+
   // API Routes
   app.get("/api/drive/list", async (req, res) => {
     const folderId = "11pBU70shMYmBAw0lGEqd1h1nYK1hJiaG";
