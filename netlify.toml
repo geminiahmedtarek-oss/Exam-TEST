@@ -1,0 +1,12 @@
+[[edge_functions]]
+  path = "/api/drive/*"
+  function = "drive"
+
+[[edge_functions]]
+  path = "/api/ai/generate"
+  function = "ai"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
