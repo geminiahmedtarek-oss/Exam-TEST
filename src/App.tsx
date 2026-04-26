@@ -250,28 +250,20 @@ Do NOT include markdown formatting like \`\`\`json - output pure JSON only.`;
 
       let jsonText = '';
       
-      // Call server proxy for secure AI generation. This works in both AI Studio and Netlify.
-      const response = await fetch('/api/ai/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ base64Data, promptText }),
-      });
-
-      if (!response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || errorData.error || "AI generation failed");
-        } else {
-          const errorBody = await response.text();
-          throw new Error(`Server error: ${response.status} - ${errorBody.substring(0, 100)}`);
+      // Use the @google/genai SDK in the browser.
+      // AI Studio proxy intercepts this and handles authentication.
+      const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+      const apiResponse = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: {
+          parts: [
+            { inlineData: { mimeType: "application/pdf", data: base64Data } },
+            { text: promptText }
+          ]
         }
-      }
-
-      const data = await response.json();
-      jsonText = data.text.trim();
+      });
+      
+      jsonText = apiResponse.text || "";
 
       if (jsonText.startsWith('\`\`\`')) {
          jsonText = jsonText.replace(/^\`\`\`(json)?/, '').replace(/\`\`\`$/, '').trim();

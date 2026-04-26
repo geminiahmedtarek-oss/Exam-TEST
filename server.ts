@@ -126,6 +126,9 @@ async function startServer() {
       const apiKey = process.env.GEMINI_API_KEY?.trim() === "MY_GEMINI_API_KEY" ? undefined : process.env.GEMINI_API_KEY?.trim();
       
       const ai = new GoogleGenAI(apiKey ? { apiKey } : {});
+      console.log(`Using apiKey of length: ${apiKey?.length}, starts with: ${apiKey?.substring(0, 4)}`);
+      import("fs").then(fs => fs.writeFileSync("apikey-debug.txt", `length: ${apiKey?.length}, starts with: ${apiKey?.substring(0, 4)}`));
+
       
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
